@@ -1,4 +1,5 @@
-from tools import *
+from tools.preprocessing import *
+from tools.parameters import *
 
 import pandas as pd
 import numpy as np
@@ -34,7 +35,7 @@ def main():
 
     df = read_csv_and_drop_invalid(TRAIN_FILE_NAME, TARGET_FEATURE)
 
-    X, y = df.drop(columns=[TARGET_FEATURE]), df[TARGET_FEATURE].copy()
+    X, y = df.drop(columns=[TARGET_FEATURE]), df[TARGET_FEATURE]
     # y, X = df.pop(target_feature), df
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=SEED)
 
@@ -45,21 +46,23 @@ def main():
     scaler = StandardScaler()
     encoder = OrdinalEncoder()
 
-    X_train = prp.fit_transform(X_train)
-    numerical_features = X_train.select_dtypes(include=[np.number])
-    columns_with_outliers = [col for col in numerical_features if col not in columns_without_outliers]
-    X_train[columns_with_outliers] = pd.DataFrame(outlier_remover.fit_transform(
-            X_train[columns_with_outliers]), columns=columns_with_outliers, index=numerical_features.index)
-    X_train[numerical_features.columns] = pd.DataFrame(numerical_imputer.fit_transform(
-        X_train[numerical_features.columns]), columns=numerical_features.columns, index=numerical_features.index)
-    # X_train[numerical_features.columns] = pd.DataFrame(scaler.fit_transform(
-    #         X_train[numerical_features.columns]), columns=numerical_features.columns, index=numerical_features.index)
-    categorical_features = X_train.select_dtypes(include=[object, 'bool', 'category'])
-    X_train[categorical_features.columns] = pd.DataFrame(categorical_imputer.fit_transform(
-        X_train[categorical_features.columns]), columns=categorical_features.columns, index=categorical_features.index)
-    X_train[categorical_features.columns] = pd.DataFrame(encoder.fit_transform(
-        X_train[categorical_features.columns]), columns=categorical_features.columns, index=categorical_features.index)
-    generate_report(X_train, y_train, TARGET_FEATURE)
+    X = prp.fit_transform(X)
+    numerical_features = X.select_dtypes(include=[np.number])
+    # columns_with_outliers = [col for col in numerical_features if col not in columns_without_outliers]
+    # X[columns_with_outliers] = pd.DataFrame(outlier_remover.fit_transform(
+    #         X[columns_with_outliers]), columns=columns_with_outliers, index=numerical_features.index)
+    X[numerical_features.columns] = pd.DataFrame(outlier_remover.fit_transform(
+        X[numerical_features.columns]), columns=numerical_features.columns, index=numerical_features.index)
+    X[numerical_features.columns] = pd.DataFrame(numerical_imputer.fit_transform(
+        X[numerical_features.columns]), columns=numerical_features.columns, index=numerical_features.index)
+    X[numerical_features.columns] = pd.DataFrame(scaler.fit_transform(
+            X[numerical_features.columns]), columns=numerical_features.columns, index=numerical_features.index)
+    categorical_features = X.select_dtypes(include=[object, 'bool', 'category'])
+    X[categorical_features.columns] = pd.DataFrame(categorical_imputer.fit_transform(
+        X[categorical_features.columns]), columns=categorical_features.columns, index=categorical_features.index)
+    X[categorical_features.columns] = pd.DataFrame(encoder.fit_transform(
+        X[categorical_features.columns]), columns=categorical_features.columns, index=categorical_features.index)
+    generate_report(X, y, TARGET_FEATURE)
 
     X_test = prp.transform(X_test)
     numerical_features = X_test.select_dtypes(include=[np.number])
