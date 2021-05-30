@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/windTurbine.iml" filepath="$PROJECT_DIR$/.idea/windTurbine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/MLChallenge-WindTurbine.iml" filepath="$PROJECT_DIR$/.idea/MLChallenge-WindTurbine.iml" />
     </modules>
   </component>
 </project>
