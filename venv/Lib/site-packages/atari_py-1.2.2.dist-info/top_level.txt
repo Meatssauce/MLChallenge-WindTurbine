@@ -1,2 +1,0 @@
-ale_c
-atari_py
